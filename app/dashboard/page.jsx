@@ -1,4 +1,5 @@
 "use client";
+
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -6,7 +7,6 @@ import { useEffect, useState } from "react";
 export default function Dashboard() {
   const { currentUser, users, logout } = useAuth();
   const router = useRouter();
-
   const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
@@ -28,9 +28,7 @@ export default function Dashboard() {
           )}
           <div>
             <p className="font-bold">{currentUser.name}</p>
-            <p className="text-sm text-gray-500">
-              {currentUser.role}
-            </p>
+            <p className="text-sm text-gray-500">{currentUser.role}</p>
           </div>
         </div>
 
@@ -44,19 +42,17 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="flex-1 p-10">
-        <h1 className="text-3xl font-bold mb-8">
-          My Courses
-        </h1>
+        <h1 className="text-3xl font-bold mb-8">My Courses</h1>
 
-        {/* <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
           {currentUser.courses.map((course) => (
             <div
               key={course.id}
               className="bg-white p-6 rounded-2xl shadow hover:shadow-xl transition"
             >
-              <h2 className="text-xl font-semibold mb-4">
-                {course.title}
-              </h2>
+              <h2 className="text-xl font-semibold mb-4">{course.title}</h2>
+
+              {/* Progress */}
               <div className="w-full bg-gray-200 h-3 rounded-full mb-3">
                 <div
                   className="bg-blue-600 h-3 rounded-full"
@@ -64,9 +60,7 @@ export default function Dashboard() {
                 ></div>
               </div>
 
-              <p className="text-sm mb-4">
-                {course.progress}% Completed
-              </p>
+              <p className="text-sm mb-4">{course.progress}% Completed</p>
 
               <button
                 onClick={() => setSelectedVideo(course.video)}
@@ -76,7 +70,7 @@ export default function Dashboard() {
               </button>
             </div>
           ))}
-        </div> */}
+        </div>
 
         {/* Admin section */}
         {currentUser.role === "admin" && (
@@ -84,6 +78,14 @@ export default function Dashboard() {
             <h2 className="text-xl font-bold mb-4">
               Registered Users: {users.length}
             </h2>
+
+            {/* Button to go to Users page */}
+            <button
+              onClick={() => router.push("/users")}
+              className="bg-green-600 text-white px-4 py-2 rounded mb-4"
+            >
+              View All Users
+            </button>
 
             {users.map((u) => (
               <p key={u.id}>
