@@ -1,15 +1,6 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { db } from "@/lib/firebase";
-import {
-  collection,
-  getDocs,
-  addDoc,
-  doc,
-  deleteDoc,
-  updateDoc,
-} from "firebase/firestore";
 
 const AuthContext = createContext();
 
@@ -18,28 +9,37 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const usersCollection = collection(db, "users");
-
-  // 🔹 Firestore'dan yuklash
+  // 🔹 LocalStorage’dan yuklash
   useEffect(() => {
-    const fetchUsers = async () => {
-      const data = await getDocs(usersCollection);
-      const fetchedUsers = data.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setUsers(fetchedUsers);
+    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const storedCurrentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
 
-      const storedCurrentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
-      setCurrentUser(storedCurrentUser);
+    const fixedUsers = storedUsers.map((user) => ({
+      ...user,
+      courses: user.courses || [
+        { id: 1, title: "React JS Masterclass", progress: 0, video: "https://www.youtube.com/embed/bMknfKXIFA8" },
+        { id: 2, title: "Next JS Full Course", progress: 0, video: "https://www.youtube.com/embed/ZVnjOPwW4ZA" },
+      ],
+    }));
 
-      setLoading(false);
-    };
-
-    fetchUsers();
+    setUsers(fixedUsers);
+    setCurrentUser(storedCurrentUser);
+    setLoading(false);
   }, []);
 
+  // 🔹 USERS va CURRENT USER localStorage ga saqlash
+  useEffect(() => {
+    localStorage.setItem("users", JSON.stringify(users));
+  }, [users]);
+
+  useEffect(() => {
+    if (currentUser) localStorage.setItem("currentUser", JSON.stringify(currentUser));
+  }, [currentUser]);
+
   // =========================
-  // REGISTER
+  // 🟢 REGISTER
   // =========================
-  const register = async (name, email, password, image, age, country) => {
+  const register = (name, email, password, image, age, country) => {
     if (!name || !email || !password || !age || !country) {
       alert("Barcha maydonlarni to‘ldiring");
       return false;
@@ -54,6 +54,7 @@ export function AuthProvider({ children }) {
     const role = email === "admin@gmail.com" ? "admin" : "user";
 
     const newUser = {
+      id: Date.now(),
       name,
       email,
       password,
@@ -67,16 +68,13 @@ export function AuthProvider({ children }) {
       ],
     };
 
-    const docRef = await addDoc(usersCollection, newUser);
-    setUsers([...users, { ...newUser, id: docRef.id }]);
-    setCurrentUser({ ...newUser, id: docRef.id });
-    localStorage.setItem("currentUser", JSON.stringify({ ...newUser, id: docRef.id }));
-
+    setUsers([...users, newUser]);
+    setCurrentUser(newUser);
     return true;
   };
 
   // =========================
-  // LOGIN
+  // 🔵 LOGIN
   // =========================
   const login = (email, password) => {
     if (!email || !password) {
@@ -84,19 +82,21 @@ export function AuthProvider({ children }) {
       return false;
     }
 
-    const foundUser = users.find((u) => u.email === email && u.password === password);
+    const foundUser = users.find(
+      (u) => u.email === email && u.password === password
+    );
+
     if (!foundUser) {
       alert("Email yoki parol noto‘g‘ri");
       return false;
     }
 
     setCurrentUser(foundUser);
-    localStorage.setItem("currentUser", JSON.stringify(foundUser));
     return true;
   };
 
   // =========================
-  // LOGOUT
+  // 🔴 LOGOUT
   // =========================
   const logout = () => {
     localStorage.removeItem("currentUser");
@@ -104,20 +104,9 @@ export function AuthProvider({ children }) {
   };
 
   // =========================
-  // REMOVE USER (Admin uchun)
+  // 🟡 PROGRESS UPDATE
   // =========================
-  const removeUser = async (userId) => {
-    if (!window.confirm("Siz rostdan ham bu foydalanuvchini o‘chirmoqchimisiz?")) return;
-    await deleteDoc(doc(db, "users", userId));
-    setUsers(users.filter((u) => u.id !== userId));
-
-    if (currentUser?.id === userId) logout();
-  };
-
-  // =========================
-  // UPDATE PROGRESS
-  // =========================
-  const updateProgress = async (courseId, newProgress) => {
+  const updateProgress = (courseId, newProgress) => {
     if (!currentUser) return;
 
     const updatedCourses = currentUser.courses.map((course) =>
@@ -125,11 +114,12 @@ export function AuthProvider({ children }) {
     );
 
     const updatedUser = { ...currentUser, courses: updatedCourses };
-    await updateDoc(doc(db, "users", currentUser.id), { courses: updatedCourses });
+    const updatedUsers = users.map((u) =>
+      u.id === currentUser.id ? updatedUser : u
+    );
 
-    setUsers(users.map((u) => (u.id === currentUser.id ? updatedUser : u)));
+    setUsers(updatedUsers);
     setCurrentUser(updatedUser);
-    localStorage.setItem("currentUser", JSON.stringify(updatedUser));
   };
 
   return (
@@ -142,8 +132,7 @@ export function AuthProvider({ children }) {
         login,
         logout,
         updateProgress,
-        removeUser,
-        setCurrentUser,
+        setCurrentUser, // optional
       }}
     >
       {!loading && children}
