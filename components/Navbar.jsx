@@ -48,7 +48,7 @@ export default function Navbar() {
           ) : (
             <div className="flex items-center gap-5">
               <Link
-                href="/dashboard"
+                href="/profile/dashboard"
                 className="text-gray-700 hover:text-indigo-600 font-medium transition-colors"
               >
                 Dashboard

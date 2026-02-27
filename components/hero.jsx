@@ -48,7 +48,7 @@ export default function Hero() {
                 Salom, {currentUser.name}!
               </p>
               <Link
-                href="/dashboard"
+                href="/profile/dashboard"
                 className="px-6 py-3 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 shadow-lg"
               >
                 Dashboard
