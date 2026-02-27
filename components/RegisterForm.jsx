@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
-export default function RegisterForm({ closeModal }) {
+export default function RegisterForm({ closeModal, openLogin }) {
   const { register } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -32,12 +32,12 @@ export default function RegisterForm({ closeModal }) {
   };
 
   return (
-    <form 
-      onSubmit={handleSubmit} 
-      className="flex flex-col gap-4 bg-white p-8 rounded-2xl shadow-lg w-full max-w-md mx-auto"
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4 bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-md mx-auto transition-all"
     >
-      <h2 className="text-3xl font-extrabold text-center mb-6 text-gray-900">
-        Ro`yxatdan o`ting
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-gray-900 mb-4 sm:mb-6">
+        Ro‘yxatdan o‘ting
       </h2>
 
       <input
@@ -45,7 +45,7 @@ export default function RegisterForm({ closeModal }) {
         placeholder="Full Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition w-full"
       />
 
       <input
@@ -53,7 +53,7 @@ export default function RegisterForm({ closeModal }) {
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition w-full"
       />
 
       <input
@@ -61,7 +61,7 @@ export default function RegisterForm({ closeModal }) {
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition w-full"
       />
 
       <input
@@ -69,7 +69,7 @@ export default function RegisterForm({ closeModal }) {
         placeholder="Yoshingiz"
         value={age}
         onChange={(e) => setAge(e.target.value)}
-        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition w-full"
       />
 
       <input
@@ -77,25 +77,31 @@ export default function RegisterForm({ closeModal }) {
         placeholder="Davlatingiz"
         value={country}
         onChange={(e) => setCountry(e.target.value)}
-        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition w-full"
       />
 
       <input
         type="file"
         accept="image/*"
         onChange={handleImage}
-        className="border border-gray-300 p-2 rounded-lg"
+        className="border border-gray-300 p-2 rounded-lg w-full"
       />
 
-      <button 
+      <button
         type="submit"
-        className="bg-gradient-to-r from-purple-500 via-indigo-600 to-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+        className="bg-gradient-to-r from-purple-500 via-indigo-600 to-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all w-full"
       >
         Register
       </button>
 
       <p className="text-center text-gray-500 text-sm mt-2">
-        Already have an account? <span className="text-blue-600 font-medium cursor-pointer hover:underline">Login</span>
+        Already have an account?{" "}
+        <span
+          className="text-blue-600 font-medium cursor-pointer hover:underline"
+          onClick={openLogin}
+        >
+          Login
+        </span>
       </p>
     </form>
   );
